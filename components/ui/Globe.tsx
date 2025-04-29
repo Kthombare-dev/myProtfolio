@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { Color, Scene, Fog, PerspectiveCamera, Vector3 } from "three";
 import ThreeGlobe from "three-globe";
 import { useThree, Object3DNode, Canvas, extend } from "@react-three/fiber";
@@ -75,22 +75,25 @@ export function Globe({ globeConfig, data }: WorldProps) {
 
   const globeRef = useRef<ThreeGlobe | null>(null);
 
-  const defaultProps = {
-    pointSize: 1,
-    atmosphereColor: "#ffffff",
-    showAtmosphere: true,
-    atmosphereAltitude: 0.1,
-    polygonColor: "rgba(255,255,255,0.7)",
-    globeColor: "#1d072e",
-    emissive: "#000000",
-    emissiveIntensity: 0.1,
-    shininess: 0.9,
-    arcTime: 2000,
-    arcLength: 0.9,
-    rings: 1,
-    maxRings: 3,
-    ...globeConfig,
-  };
+  const defaultProps = useMemo(
+    () => ({
+      pointSize: 1,
+      atmosphereColor: "#ffffff",
+      showAtmosphere: true,
+      atmosphereAltitude: 0.1,
+      polygonColor: "rgba(255,255,255,0.7)",
+      globeColor: "#1d072e",
+      emissive: "#000000",
+      emissiveIntensity: 0.1,
+      shininess: 0.9,
+      arcTime: 2000,
+      arcLength: 0.9,
+      rings: 1,
+      maxRings: 3,
+      ...globeConfig,
+    }),
+    [globeConfig]
+  );
 
   const _buildMaterial = useCallback(() => {
     if (!globeRef.current) return;
@@ -102,16 +105,22 @@ export function Globe({ globeConfig, data }: WorldProps) {
     };
     globeMaterial.color = new Color(defaultProps.globeColor);
     globeMaterial.emissive = new Color(defaultProps.emissive);
-    globeMaterial.emissiveIntensity = defaultProps.emissiveIntensity || 0.1;
-    globeMaterial.shininess = defaultProps.shininess || 0.9;
+    globeMaterial.emissiveIntensity = defaultProps.emissiveIntensity;
+    globeMaterial.shininess = defaultProps.shininess;
   }, [defaultProps]);
 
   const _buildData = useCallback(() => {
     const arcs = data;
-    let points = [];
+    let points: {
+      size: number;
+      order: number;
+      color: (t: number) => string;
+      lat: number;
+      lng: number;
+    }[] = [];
     for (let i = 0; i < arcs.length; i++) {
       const arc = arcs[i];
-      const rgb = hexToRgb(arc.color) as { r: number; g: number; b: number };
+      const rgb = hexToRgb(arc.color)!;
       points.push({
         size: defaultProps.pointSize,
         order: arc.order,
@@ -140,10 +149,43 @@ export function Globe({ globeConfig, data }: WorldProps) {
 
   useEffect(() => {
     if (globeRef.current) {
-      _buildData();
       _buildMaterial();
+      _buildData();
     }
-  }, [_buildData, _buildMaterial]);
+  }, [_buildMaterial, _buildData]);
+
+  const startAnimation = useCallback(() => {
+    if (!globeRef.current || !globeData) return;
+    globeRef.current
+      .arcsData(data)
+      .arcStartLat((d) => (d as any).startLat)
+      .arcStartLng((d) => (d as any).startLng)
+      .arcEndLat((d) => (d as any).endLat)
+      .arcEndLng((d) => (d as any).endLng)
+      .arcColor((e: any) => (e as { color: string }).color)
+      .arcAltitude((e: any) => (e as { arcAlt: number }).arcAlt)
+      .arcStroke(() => [0.32, 0.28, 0.3][Math.floor(Math.random() * 3)])
+      .arcDashLength(defaultProps.arcLength)
+      .arcDashInitialGap((e: any) => (e as { order: number }).order)
+      .arcDashGap(15)
+      .arcDashAnimateTime(() => defaultProps.arcTime);
+
+    globeRef.current
+      .pointsData(data)
+      .pointColor((e: any) => (e as { color: string }).color)
+      .pointsMerge(true)
+      .pointAltitude(0.0)
+      .pointRadius(2);
+
+    globeRef.current
+      .ringsData([])
+      .ringColor((e: any) => (t: number) => e.color(t))
+      .ringMaxRadius(defaultProps.maxRings)
+      .ringPropagationSpeed(RING_PROPAGATION_SPEED)
+      .ringRepeatPeriod(
+        (defaultProps.arcTime * defaultProps.arcLength) / defaultProps.rings
+      );
+  }, [data, defaultProps, globeData]);
 
   useEffect(() => {
     if (globeRef.current && globeData) {
@@ -157,40 +199,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
         .hexPolygonColor(() => defaultProps.polygonColor);
       startAnimation();
     }
-  }, [globeData, defaultProps]);
-
-  const startAnimation = useCallback(() => {
-    if (!globeRef.current || !globeData) return;
-    globeRef.current
-      .arcsData(data)
-      .arcStartLat((d) => (d as { startLat: number }).startLat)
-      .arcStartLng((d) => (d as { startLng: number }).startLng)
-      .arcEndLat((d) => (d as { endLat: number }).endLat)
-      .arcEndLng((d) => (d as { endLng: number }).endLng)
-      .arcColor((e: any) => (e as { color: string }).color)
-      .arcAltitude((e) => (e as { arcAlt: number }).arcAlt)
-      .arcStroke(() => [0.32, 0.28, 0.3][Math.round(Math.random() * 2)])
-      .arcDashLength(defaultProps.arcLength)
-      .arcDashInitialGap((e) => (e as { order: number }).order)
-      .arcDashGap(15)
-      .arcDashAnimateTime(() => defaultProps.arcTime);
-
-    globeRef.current
-      .pointsData(data)
-      .pointColor((e) => (e as { color: string }).color)
-      .pointsMerge(true)
-      .pointAltitude(0.0)
-      .pointRadius(2);
-
-    globeRef.current
-      .ringsData([])
-      .ringColor((e: any) => (t: any) => e.color(t))
-      .ringMaxRadius(defaultProps.maxRings)
-      .ringPropagationSpeed(RING_PROPAGATION_SPEED)
-      .ringRepeatPeriod(
-        (defaultProps.arcTime * defaultProps.arcLength) / defaultProps.rings
-      );
-  }, [data, defaultProps, globeData]);
+  }, [globeData, defaultProps, startAnimation]);
 
   useEffect(() => {
     if (!globeRef.current || !globeData) return;
@@ -253,7 +262,7 @@ export function World(props: WorldProps) {
         minDistance={cameraZ}
         maxDistance={cameraZ}
         autoRotateSpeed={1}
-        autoRotate={true}
+        autoRotate
         minPolarAngle={Math.PI / 3.5}
         maxPolarAngle={Math.PI - Math.PI / 3}
       />
@@ -262,9 +271,9 @@ export function World(props: WorldProps) {
 }
 
 export function hexToRgb(hex: string) {
-  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-  hex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
-  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  hex = hex.replace(shorthandRegex, (_, r, g, b) => r + r + g + g + b + b);
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
         r: parseInt(result[1], 16),
