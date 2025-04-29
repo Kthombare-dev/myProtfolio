@@ -1,8 +1,9 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
+import dynamic from 'next/dynamic';
 
-export const BackgroundGradientAnimation = ({
+const GradientBg = dynamic(() => Promise.resolve(({
   gradientBackgroundStart = "rgb(108, 0, 162)",
   gradientBackgroundEnd = "rgb(0, 17, 82)",
   firstColor = "18, 113, 255",
@@ -34,33 +35,41 @@ export const BackgroundGradientAnimation = ({
   containerClassName?: string;
 }) => {
   const interactiveRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
 
   const [curX, setCurX] = useState(0);
   const [curY, setCurY] = useState(0);
   const [tgX, setTgX] = useState(0);
   const [tgY, setTgY] = useState(0);
+
   useEffect(() => {
-    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-      document.body.style.setProperty(
-        "--gradient-background-start",
-        gradientBackgroundStart
-      );
-      document.body.style.setProperty(
-        "--gradient-background-end",
-        gradientBackgroundEnd
-      );
-      document.body.style.setProperty("--first-color", firstColor);
-      document.body.style.setProperty("--second-color", secondColor);
-      document.body.style.setProperty("--third-color", thirdColor);
-      document.body.style.setProperty("--fourth-color", fourthColor);
-      document.body.style.setProperty("--fifth-color", fifthColor);
-      document.body.style.setProperty("--pointer-color", pointerColor);
-      document.body.style.setProperty("--size", size);
-      document.body.style.setProperty("--blending-value", blendingValue);
-    }
+    setMounted(true);
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+    
+    document.body.style.setProperty(
+      "--gradient-background-start",
+      gradientBackgroundStart
+    );
+    document.body.style.setProperty(
+      "--gradient-background-end",
+      gradientBackgroundEnd
+    );
+    document.body.style.setProperty("--first-color", firstColor);
+    document.body.style.setProperty("--second-color", secondColor);
+    document.body.style.setProperty("--third-color", thirdColor);
+    document.body.style.setProperty("--fourth-color", fourthColor);
+    document.body.style.setProperty("--fifth-color", fifthColor);
+    document.body.style.setProperty("--pointer-color", pointerColor);
+    document.body.style.setProperty("--size", size);
+    document.body.style.setProperty("--blending-value", blendingValue);
+  }, [mounted]);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     function move() {
       if (!interactiveRef.current) {
         return;
@@ -73,7 +82,7 @@ export const BackgroundGradientAnimation = ({
     }
 
     move();
-  }, [tgX, tgY]);
+  }, [tgX, tgY, mounted]);
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     if (interactiveRef.current) {
@@ -85,10 +94,11 @@ export const BackgroundGradientAnimation = ({
 
   const [isSafari, setIsSafari] = useState(false);
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsSafari(/^((?!chrome|android).)*safari/i.test(navigator.userAgent));
-    }
-  }, []);
+    if (!mounted) return;
+    setIsSafari(/^((?!chrome|android).)*safari/i.test(navigator.userAgent));
+  }, [mounted]);
+
+  if (!mounted) return null;
 
   return (
     <div
@@ -182,4 +192,6 @@ export const BackgroundGradientAnimation = ({
       </div>
     </div>
   );
-};
+}), { ssr: false });
+
+export { GradientBg as BackgroundGradientAnimation };
