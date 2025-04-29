@@ -2,10 +2,14 @@ import { useState } from "react";
 import { IoCopyOutline } from "react-icons/io5";
 import Lottie from "react-lottie";
 import { cn } from "@/lib/utils";
-import { BackgroundGradientAnimation } from "./GradientBg";
+import dynamic from 'next/dynamic';
 import GridGlobe from "./GridGlobe";
 import animationData from "@/data/confetti.json";
 import MagicButton from "../MagicButton";
+
+const BackgroundGradientAnimation = dynamic(() => import('./GradientBg').then(mod => mod.BackgroundGradientAnimation), {
+  ssr: false
+});
 
 export const BentoGrid = ({
   className,
@@ -28,18 +32,18 @@ export const BentoGrid = ({
 
 export const BentoGridItem = ({
   className,
-  id,
   title,
   description,
+  id,
   img,
   imgClassName,
   titleClassName,
   spareImg,
 }: {
   className?: string;
-  id: number;
   title?: string | React.ReactNode;
   description?: string | React.ReactNode;
+  id?: number;
   img?: string;
   imgClassName?: string;
   titleClassName?: string;
@@ -60,7 +64,7 @@ export const BentoGridItem = ({
   };
 
   const handleCopy = () => {
-    const text = "ketancode14@gmail.com";
+    const text = "hsu@jsmastery.pro";
     navigator.clipboard.writeText(text);
     setCopied(true);
   };
@@ -101,9 +105,11 @@ export const BentoGridItem = ({
           )}
         </div>
         {id === 6 && (
-          <BackgroundGradientAnimation>
-            <div className="absolute z-50 inset-0 flex items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl"></div>
-          </BackgroundGradientAnimation>
+          <div className="absolute z-50 inset-0 flex items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl">
+            <BackgroundGradientAnimation>
+              <div className="absolute z-50 inset-0 flex items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl"></div>
+            </BackgroundGradientAnimation>
+          </div>
         )}
 
         <div
