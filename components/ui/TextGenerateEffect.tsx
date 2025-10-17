@@ -1,41 +1,34 @@
 "use client";
-import { useEffect } from "react";
-import { motion, stagger, useAnimate } from "framer-motion";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export const TextGenerateEffect = ({
   words,
   className,
+  highlightStart = -1,
+  highlightClass = "",
+  baseClass = "",
 }: {
   words: string;
   className?: string;
+  highlightStart?: number;
+  highlightClass?: string;
+  baseClass?: string;
 }) => {
-  const [scope, animate] = useAnimate();
-  let wordsArray = words.split(" ");
-  useEffect(() => {
-    console.log(wordsArray);
-    animate(
-      "span",
-      {
-        opacity: 1,
-      },
-      {
-        duration: 2,
-        delay: stagger(0.2),
-      }
-    );
-  }, [scope.current]);
+  const wordsArray = words.split(" ");
 
   const renderWords = () => {
     return (
-      <motion.div ref={scope}>
+      <motion.div>
         {wordsArray.map((word, idx) => {
           return (
             <motion.span
               key={word + idx}
-              // change here if idx is greater than 3, change the text color to #CBACF9
-              className={` ${idx > 3 ? "text-purple" : "dark:text-white text-black"
-                } opacity-0`}
+              className={`${idx >= highlightStart && highlightStart >= 0 ? highlightClass : baseClass}`}
+              initial={{ opacity: 0, y: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: idx * 0.12, ease: "easeOut" }}
+              viewport={{ once: false, amount: 0.6 }}
             >
               {word}{" "}
             </motion.span>
@@ -50,7 +43,7 @@ export const TextGenerateEffect = ({
       {/* mt-4 to my-4 */}
       <div className="my-4">
         {/* remove  text-2xl from the original */}
-        <div className=" dark:text-white text-black leading-snug tracking-wide">
+        <div className="leading-snug tracking-wide">
           {renderWords()}
         </div>
       </div>

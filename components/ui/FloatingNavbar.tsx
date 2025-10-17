@@ -1,11 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useMotionValueEvent,
-} from "framer-motion";
+import React, { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -20,83 +15,176 @@ export const FloatingNav = ({
   }[];
   className?: string;
 }) => {
-  const { scrollYProgress } = useScroll();
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
+  
 
-  // set true for the initial state so that nav bar is visible in the hero section
-  const [visible, setVisible] = useState(true);
+  // Split into primary and more groups for desktop navbar
+  const { primaryItems, moreItems } = useMemo(() => {
+    const primarySet = new Set(["Home", "About", "Projects"]);
+    const primary = navItems.filter((n) => primarySet.has(n.name));
+    const more = navItems.filter((n) => !primarySet.has(n.name));
+    return { primaryItems: primary, moreItems: more };
+  }, [navItems]);
 
-  useMotionValueEvent(scrollYProgress, "change", (current) => {
-    // Check if current is not undefined and is a number
-    if (typeof current === "number") {
-      let direction = current! - scrollYProgress.getPrevious()!;
+  // Note: Journey bar removed; section observer not needed.
 
-      if (scrollYProgress.get() < 0.05) {
-        // also set true for the initial state
-        setVisible(true);
-      } else {
-        if (direction < 0) {
-          setVisible(true);
-        } else {
-          setVisible(false);
-        }
-      }
-    }
-  });
+  const renderIcon = (label: string) => {
+    const key = label.toLowerCase();
+    if (key === "home") return <span aria-hidden>🏠</span>;
+    if (key === "about") return <span aria-hidden>👤</span>;
+    if (key === "skills") return <span aria-hidden>🛠️</span>;
+    if (key === "experience") return <span aria-hidden>💼</span>;
+    if (key === "projects") return <span aria-hidden>📁</span>;
+    if (key === "leadership") return <span aria-hidden>👑</span>;
+    if (key === "certificates") return <span aria-hidden>🎓</span>;
+    if (key === "contact") return <span aria-hidden>✉️</span>;
+    return null;
+  };
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        initial={{
-          opacity: 1,
-          y: -100,
-        }}
-        animate={{
-          y: visible ? 0 : -100,
-          opacity: visible ? 1 : 0,
-        }}
-        transition={{
-          duration: 0.2,
-        }}
-        className={cn(
-          // change rounded-full to rounded-lg
-          // remove dark:border-white/[0.2] dark:bg-black bg-white border-transparent
-          // change  pr-2 pl-8 py-2 to px-10 py-5
-          "flex max-w-fit md:min-w-[70vw] lg:min-w-fit fixed z-[5000] top-10 inset-x-0 mx-auto px-10 py-5 rounded-full border border-black/.1 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)] items-center justify-center space-x-4",
-          className
-        )}
-        style={{
-          backdropFilter: "blur(16px) saturate(180%)",
-          backgroundColor: "rgba(17, 25, 40, 0.75)",
-          borderRadius: "12px",
-          border: "1px solid rgba(255, 255, 255, 0.125)",
-        }}
+    <nav className={cn("fixed top-4 inset-x-0 z-[5000] flex justify-center", className)}>
+      <div
+        className="px-3 sm:px-4 lg:px-5 w-auto"
       >
-        {navItems.map((navItem, idx) =>
-          navItem.name.toLowerCase() ===
-          "testimonials" ? //   {/* remove hidden sm:block for the mobile responsive */} //   {/* add !cursor-pointer */} //   <span className="block sm:hidden">{navItem.icon}</span> // > //   )} //     "relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500" //   className={cn( //   href={navItem.link} //   key={`link=${idx}`} // <Link // Commenting out the testimonials option
-          //   <span className=" text-sm !cursor-pointer">{navItem.name}</span>
-          // </Link>
-          null : (
-            <Link
-              key={`link=${idx}`}
-              href={navItem.link}
-              className={cn(
-                "relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500"
-              )}
+        <div className="hidden md:inline-block rounded-full p-[1.5px] bg-gradient-to-r from-[#D4AF37] via-[#b38600] to-[#FFD700] shadow-[0_0_20px_rgba(212,175,55,0.35)] max-w-[calc(100vw-1rem)] overflow-hidden">
+          <div
+            className="h-14 flex items-center justify-between rounded-full bg-[rgba(0,0,0,0.85)] backdrop-blur px-3 w-auto"
+          >
+          <div />
+
+          <div className="hidden md:flex items-center gap-4 lg:gap-6 whitespace-nowrap">
+            {primaryItems.map((navItem, idx) => (
+              <Link
+                key={`dplink=${idx}`}
+                href={navItem.link}
+                className="text-[13px] md:text-sm lg:text-base text-neutral-200 hover:text-white transition-colors px-2 py-1 rounded-md inline-flex items-center gap-2"
+              >
+                <span className="hidden lg:inline">{renderIcon(navItem.name)}</span>
+                <span>{navItem.name}</span>
+              </Link>
+            ))}
+
+            {moreItems.length > 0 && (
+              <div className="relative" onMouseLeave={() => setIsMoreOpen(false)}>
+                <button
+                  className="inline-flex items-center gap-1 text-[13px] md:text-sm lg:text-base text-neutral-200 hover:text-white transition-colors px-2 py-1 rounded-md"
+                  onMouseEnter={() => setIsMoreOpen(true)}
+                  onClick={() => setIsMoreOpen((v) => !v)}
+                  aria-haspopup="menu"
+                  aria-expanded={isMoreOpen}
+                >
+                  More <span aria-hidden className="ml-0.5">▾</span>
+                </button>
+                <AnimatePresence>
+                  {isMoreOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                      className="absolute right-0 mt-2 min-w-[14rem] md:min-w-[18rem] rounded-xl border border-[#D4AF37]/20 bg-[rgba(0,0,0,0.92)] backdrop-blur-xl shadow-[0_12px_32px_rgba(0,0,0,0.45)] p-2 z-[5100]"
+                      role="menu"
+                    >
+                      <div className="flex flex-col gap-1">
+                        {moreItems.map((item, i) => (
+                          <Link
+                            key={`more-${i}`}
+                            href={item.link}
+                            className="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] md:text-sm text-neutral-200 hover:text-white hover:bg-white/5 transition-all duration-200 ease-out hover:shadow-[0_8px_20px_rgba(0,0,0,0.25)] hover:translate-x-0.5"
+                            onClick={() => setIsMoreOpen(false)}
+                            role="menuitem"
+                          >
+                            <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-white/5 transition-transform duration-200 group-hover:scale-105 group-hover:bg-[#D4AF37]/10">
+                              {renderIcon(item.name)}
+                            </span>
+                            <span className="flex-1">{item.name}</span>
+                            <span className="opacity-0 translate-x-[-4px] group-hover:opacity-100 group-hover:translate-x-0 text-[#D4AF37] transition-all duration-200" aria-hidden>
+                              ↗
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2" />
+        </div>
+        </div>
+      </div>
+
+      {/* Mobile hamburger at top-right */}
+      <button
+        aria-label="Open menu"
+        className="md:hidden fixed top-4 right-4 z-[5050] inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#D4AF37]/40 bg-[rgba(0,0,0,0.85)] text-neutral-200 hover:text-white shadow-[0_0_12px_rgba(212,175,55,0.25)]"
+        onClick={() => setIsOpen(true)}
+      >
+        <span aria-hidden>☰</span>
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="md:hidden fixed inset-0 z-[5040] bg-black/50"
+              onClick={() => setIsOpen(false)}
+            />
+            <motion.aside
+              initial={{ x: 320 }}
+              animate={{ x: 0 }}
+              exit={{ x: 320 }}
+              transition={{ type: "spring", stiffness: 260, damping: 26 }}
+              className="md:hidden fixed top-0 right-0 z-[5060] h-full w-[80vw] max-w-[320px] bg-[rgba(0,0,0,0.92)] backdrop-blur-xl border-l border-[#D4AF37]/30 shadow-[0_0_24px_rgba(212,175,55,0.25)]"
+              role="dialog"
+              aria-modal="true"
             >
-              <span className="block sm:hidden">{navItem.icon}</span>
-              {/* add !cursor-pointer */}
-              {/* remove hidden sm:block for the mobile responsive */}
-              <span className=" text-sm !cursor-pointer">{navItem.name}</span>
-            </Link>
-          )
+              <div className="flex items-center justify-between px-4 h-14 border-b border-white/10">
+                <span className="text-sm text-neutral-300">Menu</span>
+                <button
+                  aria-label="Close menu"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full text-neutral-300 hover:text-white hover:bg-white/5"
+                  onClick={() => setIsOpen(false)}
+                >
+                  ✖️
+                </button>
+              </div>
+              <nav className="p-3 space-y-1">
+                {navItems.map((navItem, idx) => (
+                  <Link
+                    key={`slink=${idx}`}
+                    href={navItem.link}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-neutral-200 hover:text-white hover:bg-white/5"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <span>
+                      {(() => {
+                        const key = navItem.name.toLowerCase();
+                        if (key === "home") return <span aria-hidden>🏠</span>;
+                        if (key === "about") return <span aria-hidden>👤</span>;
+                        if (key === "skills") return <span aria-hidden>🛠️</span>;
+                        if (key === "experience") return <span aria-hidden>💼</span>;
+                        if (key === "projects") return <span aria-hidden>📁</span>;
+                        if (key === "leadership") return <span aria-hidden>👑</span>;
+                        if (key === "certificates") return <span aria-hidden>🎓</span>;
+                        if (key === "contact") return <span aria-hidden>✉️</span>;
+                        return null;
+                      })()}
+                    </span>
+                    <span className="text-sm">{navItem.name}</span>
+                  </Link>
+                ))}
+              </nav>
+            </motion.aside>
+          </>
         )}
-        {/* remove this login btn */}
-        {/* <button className="border text-sm font-medium relative border-neutral-200 dark:border-white/[0.2] text-black dark:text-white px-4 py-2 rounded-full">
-          <span>Login</span>
-          <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-gradient-to-r from-transparent via-blue-500 to-transparent  h-px" />
-        </button> */}
-      </motion.div>
-    </AnimatePresence>
+      </AnimatePresence>
+
+    </nav>
   );
 };

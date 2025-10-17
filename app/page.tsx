@@ -3,7 +3,7 @@
 import ClientOnly from "@/components/ClientOnly";
 import { navItems } from "@/data";
 import Hero from "@/components/Hero";
-import Grid from "@/components/Grid";
+import Skills from "@/components/Skills";
 import Footer from "@/components/Footer";
 import Clients from "@/components/Clients";
 import Approach from "@/components/Approach";
@@ -13,12 +13,12 @@ import { FloatingNav } from "@/components/ui/FloatingNavbar";
 
 export default function Home() {
   return (
-    <main className="relative bg-black-100 flex justify-center items-center flex-col mx-auto sm:px-10 px-5 overflow-clip">
+    <main className="relative bg-black-100 flex justify-center items-center flex-col mx-auto sm:px-10 px-5 overflow-x-hidden">
       <div className="max-w-7xl w-full">
         <ClientOnly>
           <FloatingNav navItems={navItems} />
           <Hero />
-          <Grid />
+          <Skills />
           <RecentProjects />
           {/*<Clients />*/}
           <Experience />
