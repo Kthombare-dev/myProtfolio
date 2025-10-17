@@ -10,6 +10,7 @@ import Approach from "@/components/Approach";
 import Experience from "@/components/Experience";
 import RecentProjects from "@/components/RecentProjects";
 import { FloatingNav } from "@/components/ui/FloatingNavbar";
+import BuiltLedDelivered from "@/components/BuiltLedDelivered";
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
         <ClientOnly>
           <FloatingNav navItems={navItems} />
           <Hero />
+          <BuiltLedDelivered />
           <Skills />
           <RecentProjects />
           {/*<Clients />*/}
