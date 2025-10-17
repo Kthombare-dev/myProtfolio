@@ -1,12 +1,12 @@
 export const navItems = [
-  { name: "Home", link: "#home" },
-  { name: "About", link: "#about" },
+  { name: "Home", link: "/" },
   { name: "Skills", link: "#skills" },
-  { name: "Experience", link: "#experience" },
-  { name: "Projects", link: "#projects" },
+  // Point Experience to the Built. Led. Delivered. section
+  { name: "Experience", link: "#built-led-delivered" },
   { name: "Leadership", link: "#leadership" },
-  { name: "Certificates", link: "#certificates" },
-  { name: "Contact", link: "#contact" },
+  // Point Projects to the Systems I've Brought to Life section
+  { name: "Projects", link: "#systems" },
+  { name: "Contact", link: "#lets-build-together" },
 ];
 
 export const gridItems = [

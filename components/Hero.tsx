@@ -78,7 +78,7 @@ const Hero = () => {
           </p>
 
           <div className="mt-6 flex flex-wrap md:flex-nowrap items-center gap-2 sm:gap-4">
-            <a href="#projects">
+            <a href="#systems">
               <MagicButton
                 title="Explore My Work"
                 icon={<FaLocationArrow />}
@@ -88,10 +88,17 @@ const Hero = () => {
             </a>
 
             <a
-              href="#contact"
+              href="#lets-build-together"
               className="inline-flex h-12 items-center mt-2 md:mt-10 lg:mt-10 rounded-lg border border-[#D4AF37]/40 px-6 text-sm text-neutral-200 hover:text-white hover:bg-white/5 whitespace-nowrap"
             >
               Let's Connect
+            </a>
+
+            <a
+              href="https://drive.google.com/uc?export=download&id=1ntYY-tf-rGiVDRgE_kgpK5ZEv0CcPQfq"
+              className="inline-flex h-12 items-center mt-2 md:mt-10 lg:mt-10 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#B8941F] text-black px-6 text-sm font-semibold hover:from-[#B8941F] hover:to-[#D4AF37] whitespace-nowrap"
+            >
+              Get My Resume
             </a>
           </div>
 

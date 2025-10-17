@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -17,17 +17,68 @@ export const FloatingNav = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const [activeId, setActiveId] = useState<string>("home");
   
 
   // Split into primary and more groups for desktop navbar
   const { primaryItems, moreItems } = useMemo(() => {
-    const primarySet = new Set(["Home", "About", "Projects"]);
-    const primary = navItems.filter((n) => primarySet.has(n.name));
-    const more = navItems.filter((n) => !primarySet.has(n.name));
+    // Explicit order; ensure Contact is included visibly
+    const order = ["Home", "Skills", "Experience", "Leadership", "Projects", "Contact"];
+    const byName = (name: string) => navItems.find((n) => n.name === name);
+    const primary = order
+      .map((name) => byName(name))
+      .filter((n): n is { name: string; link: string; icon?: JSX.Element } => Boolean(n));
+    const primaryNames = new Set(primary.map((p) => p.name));
+    const more = navItems.filter((n) => !primaryNames.has(n.name));
     return { primaryItems: primary, moreItems: more };
   }, [navItems]);
 
   // Note: Journey bar removed; section observer not needed.
+  // Observe sections to highlight active nav item
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const ids = navItems
+      .map((n) => (n.link.startsWith("#") ? n.link.substring(1) : ""))
+      .filter(Boolean);
+    const elements = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    if (elements.length === 0) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const id = entry.target.getAttribute("id");
+          if (!id) return;
+          if (entry.isIntersecting) {
+            setActiveId(id);
+          }
+        });
+      },
+      {
+        // Trigger when the section is near middle of viewport
+        root: null,
+        rootMargin: "-45% 0px -50% 0px",
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      }
+    );
+
+    elements.forEach((el) => io.observe(el as Element));
+    return () => io.disconnect();
+  }, [navItems]);
+
+  // Ensure Home is highlighted near top of page and on initial load
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handler = () => {
+      if (window.scrollY < 80) {
+        setActiveId("home");
+      }
+    };
+    window.addEventListener("scroll", handler, { passive: true });
+    handler();
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
 
   const renderIcon = (label: string) => {
     const key = label.toLowerCase();
@@ -47,72 +98,35 @@ export const FloatingNav = ({
       <div
         className="px-3 sm:px-4 lg:px-5 w-auto"
       >
-        <div className="hidden md:inline-block rounded-full p-[1.5px] bg-gradient-to-r from-[#D4AF37] via-[#b38600] to-[#FFD700] shadow-[0_0_20px_rgba(212,175,55,0.35)] max-w-[calc(100vw-1rem)] overflow-hidden">
+        <div className="hidden md:inline-block rounded-full p-[1.5px] bg-gradient-to-r from-[#D4AF37] via-[#b38600] to-[#FFD700] shadow-[0_0_20px_rgba(212,175,55,0.35)] max-w-[calc(100vw-1rem)] overflow-visible">
           <div
             className="h-14 flex items-center justify-between rounded-full bg-[rgba(0,0,0,0.85)] backdrop-blur px-3 w-auto"
           >
           <div />
 
           <div className="hidden md:flex items-center gap-4 lg:gap-6 whitespace-nowrap">
-            {primaryItems.map((navItem, idx) => (
+            {primaryItems.map((navItem, idx) => {
+              const id = navItem.name === "Home" ? "home" : (navItem.link.startsWith("#") ? navItem.link.substring(1) : navItem.link);
+              const isActive = id === activeId;
+              return (
               <Link
                 key={`dplink=${idx}`}
                 href={navItem.link}
-                className="text-[13px] md:text-sm lg:text-base text-neutral-200 hover:text-white transition-colors px-2 py-1 rounded-md inline-flex items-center gap-2"
+                className={cn(
+                  "text-[13px] md:text-sm lg:text-base transition-colors px-2 py-1 rounded-md inline-flex items-center gap-2",
+                  isActive ? "text-[#D4AF37] bg-white/5" : "text-neutral-200 hover:text-white"
+                )}
               >
                 <span className="hidden lg:inline">{renderIcon(navItem.name)}</span>
                 <span>{navItem.name}</span>
               </Link>
-            ))}
+            );})}
 
-            {moreItems.length > 0 && (
-              <div className="relative" onMouseLeave={() => setIsMoreOpen(false)}>
-                <button
-                  className="inline-flex items-center gap-1 text-[13px] md:text-sm lg:text-base text-neutral-200 hover:text-white transition-colors px-2 py-1 rounded-md"
-                  onMouseEnter={() => setIsMoreOpen(true)}
-                  onClick={() => setIsMoreOpen((v) => !v)}
-                  aria-haspopup="menu"
-                  aria-expanded={isMoreOpen}
-                >
-                  More <span aria-hidden className="ml-0.5">▾</span>
-                </button>
-                <AnimatePresence>
-                  {isMoreOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -6, scale: 0.98 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                      className="absolute right-0 mt-2 min-w-[14rem] md:min-w-[18rem] rounded-xl border border-[#D4AF37]/20 bg-[rgba(0,0,0,0.92)] backdrop-blur-xl shadow-[0_12px_32px_rgba(0,0,0,0.45)] p-2 z-[5100]"
-                      role="menu"
-                    >
-                      <div className="flex flex-col gap-1">
-                        {moreItems.map((item, i) => (
-                          <Link
-                            key={`more-${i}`}
-                            href={item.link}
-                            className="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] md:text-sm text-neutral-200 hover:text-white hover:bg-white/5 transition-all duration-200 ease-out hover:shadow-[0_8px_20px_rgba(0,0,0,0.25)] hover:translate-x-0.5"
-                            onClick={() => setIsMoreOpen(false)}
-                            role="menuitem"
-                          >
-                            <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-white/5 transition-transform duration-200 group-hover:scale-105 group-hover:bg-[#D4AF37]/10">
-                              {renderIcon(item.name)}
-                            </span>
-                            <span className="flex-1">{item.name}</span>
-                            <span className="opacity-0 translate-x-[-4px] group-hover:opacity-100 group-hover:translate-x-0 text-[#D4AF37] transition-all duration-200" aria-hidden>
-                              ↗
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            )}
+            {/* More dropdown removed as per requirement */}
           </div>
 
           <div className="flex items-center gap-2" />
-        </div>
+          </div>
         </div>
       </div>
 
@@ -128,7 +142,7 @@ export const FloatingNav = ({
       <AnimatePresence>
         {isOpen && (
           <>
-            <motion.div
+          <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -155,30 +169,30 @@ export const FloatingNav = ({
                 </button>
               </div>
               <nav className="p-3 space-y-1">
-                {navItems.map((navItem, idx) => (
-                  <Link
+              {navItems.map((navItem, idx) => (
+                <Link
                     key={`slink=${idx}`}
-                    href={navItem.link}
+                  href={navItem.link}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-neutral-200 hover:text-white hover:bg-white/5"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span>
-                      {(() => {
-                        const key = navItem.name.toLowerCase();
-                        if (key === "home") return <span aria-hidden>🏠</span>;
-                        if (key === "about") return <span aria-hidden>👤</span>;
-                        if (key === "skills") return <span aria-hidden>🛠️</span>;
-                        if (key === "experience") return <span aria-hidden>💼</span>;
-                        if (key === "projects") return <span aria-hidden>📁</span>;
-                        if (key === "leadership") return <span aria-hidden>👑</span>;
-                        if (key === "certificates") return <span aria-hidden>🎓</span>;
-                        if (key === "contact") return <span aria-hidden>✉️</span>;
-                        return null;
-                      })()}
-                    </span>
-                    <span className="text-sm">{navItem.name}</span>
-                  </Link>
-                ))}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span>
+                    {(() => {
+                      const key = navItem.name.toLowerCase();
+                      if (key === "home") return <span aria-hidden>🏠</span>;
+                      if (key === "about") return <span aria-hidden>👤</span>;
+                      if (key === "skills") return <span aria-hidden>🛠️</span>;
+                      if (key === "experience") return <span aria-hidden>💼</span>;
+                      if (key === "projects") return <span aria-hidden>📁</span>;
+                      if (key === "leadership") return <span aria-hidden>👑</span>;
+                      if (key === "certificates") return <span aria-hidden>🎓</span>;
+                      if (key === "contact") return <span aria-hidden>✉️</span>;
+                      return null;
+                    })()}
+                  </span>
+                  <span className="text-sm">{navItem.name}</span>
+                </Link>
+              ))}
               </nav>
             </motion.aside>
           </>

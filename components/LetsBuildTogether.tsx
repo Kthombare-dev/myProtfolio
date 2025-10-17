@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { TextGenerateEffect } from "./ui/TextGenerateEffect";
 
 const LetsBuildTogether = () => {
   const [formData, setFormData] = useState({
@@ -71,10 +72,13 @@ const LetsBuildTogether = () => {
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline leading-tight text-[28px] sm:text-4xl md:text-5xl lg:text-6xl font-bold">
-            <span className="text-white">Let's </span>
-            <span className="text-[#D4AF37]">Build Together</span>
-          </div>
+          <TextGenerateEffect
+            words={"Let's Build Together"}
+            baseClass="text-white"
+            highlightStart={1}
+            highlightClass="text-[#D4AF37]"
+            className="inline leading-tight text-[28px] sm:text-4xl md:text-5xl lg:text-6xl font-bold"
+          />
           <p className="mt-4 text-center text-neutral-300 text-sm sm:text-base md:text-lg max-w-3xl mx-auto">
             Ready to turn your ideas into reality? Let's collaborate and create something amazing together.
           </p>
@@ -230,6 +234,16 @@ const LetsBuildTogether = () => {
               </p>
             </motion.div>
           </motion.div>
+        </div>
+      </div>
+
+      {/* Developer Credit */}
+      <div className="mt-16 pt-8 border-t border-neutral-800/50">
+        <div className="text-center">
+          <p className="text-neutral-500 text-base">
+            Built with <span className="text-red-500">♥</span> by{" "}
+            <span className="text-[#D4AF37] font-medium">Ketan Thombare</span>
+          </p>
         </div>
       </div>
     </section>
