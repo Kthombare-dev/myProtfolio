@@ -70,9 +70,11 @@
   * {
     @apply border-border !scroll-smooth;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   button {
     @apply active:outline-none;
   }
@@ -81,5 +83,19 @@
 @layer utilities {
   .heading {
     @apply font-bold text-4xl md:text-5xl text-center;
+  }
+
+  /* 3D Flip Card Styles */
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+
+  .rotate-y-0 {
+    transform: rotateY(0deg);
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 }

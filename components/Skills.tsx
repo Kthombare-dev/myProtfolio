@@ -9,13 +9,16 @@ const Skills = () => {
     <section id="skills" className="w-full pt-8 md:pt-14 pb-16 md:pb-20 -mt-6 md:-mt-4">
       <div className="heading text-center whitespace-nowrap flex items-baseline justify-center gap-2">
         <TextGenerateEffect
-          words="My Full Stack Canvas"
+          words="The Software Canvas"
           baseClass="text-white"
           highlightStart={1}
           highlightClass="text-[#D4AF37]"
           className="inline leading-tight text-[28px] sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl"
         />
       </div>
+      <p className="mt-2 text-center text-neutral-300 text-sm sm:text-base md:text-lg">
+        My toolkit for building intelligent, end-to-end software systems.
+      </p>
 
       {/* 3x3 Table layout */}
       {(() => {

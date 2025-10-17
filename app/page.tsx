@@ -11,6 +11,7 @@ import Experience from "@/components/Experience";
 import RecentProjects from "@/components/RecentProjects";
 import { FloatingNav } from "@/components/ui/FloatingNavbar";
 import BuiltLedDelivered from "@/components/BuiltLedDelivered";
+import Leadership from "@/components/Leadership";
 
 export default function Home() {
   return (
@@ -19,8 +20,9 @@ export default function Home() {
         <ClientOnly>
           <FloatingNav navItems={navItems} />
           <Hero />
-          <BuiltLedDelivered />
           <Skills />
+          <BuiltLedDelivered />
+          <Leadership />
           <RecentProjects />
           {/*<Clients />*/}
           <Experience />
