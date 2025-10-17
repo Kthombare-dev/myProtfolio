@@ -4,14 +4,14 @@ import ClientOnly from "@/components/ClientOnly";
 import { navItems } from "@/data";
 import Hero from "@/components/Hero";
 import Skills from "@/components/Skills";
-import Footer from "@/components/Footer";
+// import Footer from "@/components/Footer";
 import Clients from "@/components/Clients";
-import Approach from "@/components/Approach";
-import Experience from "@/components/Experience";
-import RecentProjects from "@/components/RecentProjects";
+// import Approach from "@/components/Approach";
 import { FloatingNav } from "@/components/ui/FloatingNavbar";
 import BuiltLedDelivered from "@/components/BuiltLedDelivered";
 import Leadership from "@/components/Leadership";
+import Systems from "@/components/Systems";
+import LetsBuildTogether from "@/components/LetsBuildTogether";
 
 export default function Home() {
   return (
@@ -23,11 +23,11 @@ export default function Home() {
           <Skills />
           <BuiltLedDelivered />
           <Leadership />
-          <RecentProjects />
+          <Systems />
+          <LetsBuildTogether />
           {/*<Clients />*/}
-          <Experience />
-          <Approach />
-          <Footer />
+          {/* <Approach /> */}
+          {/* <Footer /> */}
         </ClientOnly>
       </div>
     </main>
