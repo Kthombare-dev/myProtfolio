@@ -1,0 +1,31 @@
+{
+    "name": "Ketan Thombare - Full-Stack Developer Portfolio",
+    "short_name": "Ketan Thombare",
+    "description": "Passionate full-stack developer specializing in Next.js, React, Node.js, and AI integration. Leading tech communities and building scalable web applications.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#D4AF37",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/Icon.webp",
+            "sizes": "192x192",
+            "type": "image/webp",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/Icon.webp",
+            "sizes": "512x512",
+            "type": "image/webp",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": [
+        "portfolio",
+        "developer",
+        "technology"
+    ],
+    "lang": "en",
+    "dir": "ltr"
+}
