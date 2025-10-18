@@ -10,7 +10,7 @@ import TechRing from "./ui/TechRing";
 
 const Hero = () => {
   return (
-    <div className="pb-8 sm:pb-12 md:pb-16 lg:pb-20 pt-12 sm:pt-16 md:pt-20 lg:pt-24 relative mt-16 sm:mt-20 md:mt-24 lg:mt-28" style={{ minHeight: 'max(50vh, 400px)' }}>
+    <div className="pb-8 sm:pb-12 md:pb-16 lg:pb-20 pt-12 sm:pt-16 md:pt-20 lg:pt-24 relative mt-16 sm:mt-20 md:mt-24 lg:mt-16 xl:mt-12" style={{ minHeight: 'max(50vh, 400px)' }}>
       {/* Spotlights */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         <Spotlight
