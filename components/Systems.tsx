@@ -88,9 +88,9 @@ const Systems = () => {
               viewport={{ once: true }}
               className="group"
             >
-              <div className="relative bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl overflow-hidden border border-neutral-700/50 hover:border-[#D4AF37]/50 transition-all duration-500 hover:shadow-2xl hover:shadow-[#D4AF37]/10 h-[600px] flex flex-col">
+              <div className="relative bg-gradient-to-br from-neutral-900 to-neutral-800 rounded-2xl overflow-hidden border border-neutral-700/50 hover:border-[#D4AF37]/50 transition-all duration-500 hover:shadow-2xl hover:shadow-[#D4AF37]/10 h-[500px] sm:h-[550px] md:h-[600px] flex flex-col">
                 {/* Project Image */}
-                <div className="relative h-56 overflow-hidden">
+                <div className="relative h-48 sm:h-52 md:h-56 overflow-hidden">
                   <Image
                     src={project.image}
                     alt={project.title}
@@ -132,7 +132,7 @@ const Systems = () => {
                   
                   {/* Description */}
                   <div className="mb-4 flex-1">
-                    <div className={expandedCards.has(project.id) ? "max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-[#D4AF37]/30 scrollbar-track-transparent" : "line-clamp-3"}>
+                    <div className={expandedCards.has(project.id) ? "max-h-24 sm:max-h-28 md:max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-[#D4AF37]/30 scrollbar-track-transparent pr-2" : "line-clamp-3"}>
                       <p className="text-neutral-300 text-sm leading-relaxed">
                         {expandedCards.has(project.id) ? project.description : truncateDescription(project.description)}
                       </p>

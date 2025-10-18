@@ -109,6 +109,8 @@
   /* Custom Scrollbar Styles */
   .scrollbar-thin {
     scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    /* iOS smooth scrolling */
   }
 
   .scrollbar-thin::-webkit-scrollbar {
@@ -126,5 +128,16 @@
 
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background-color: rgba(212, 175, 55, 0.5);
+  }
+
+  /* Mobile scrolling improvements */
+  @media (max-width: 640px) {
+    .scrollbar-thin {
+      scrollbar-width: auto;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+    }
   }
 }
