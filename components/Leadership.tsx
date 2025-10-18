@@ -112,7 +112,8 @@ const communityData: CommunityItem[] = [
 
 const Leadership = () => {
   const [flippedCard, setFlippedCard] = useState<number | null>(null);
-  const touchFlipRef = useRef(false);
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const touchMovedRef = useRef(false);
 
   function toggleFlip(id: number) {
     setFlippedCard((prev) => {
@@ -125,6 +126,44 @@ const Leadership = () => {
       return next;
     });
   }
+
+  const handleTouchStart = (e: React.TouchEvent, id: number) => {
+    const touch = e.touches[0];
+    touchStartRef.current = {
+      x: touch.clientX,
+      y: touch.clientY,
+      time: Date.now()
+    };
+    touchMovedRef.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStartRef.current.y);
+    
+    // If user moved more than 10px, consider it a scroll gesture
+    if (deltaX > 10 || deltaY > 10) {
+      touchMovedRef.current = true;
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent, id: number) => {
+    if (!touchStartRef.current) return;
+    
+    const touchDuration = Date.now() - touchStartRef.current.time;
+    
+    // Only flip if it was a quick tap (not a scroll) and user didn't move much
+    if (!touchMovedRef.current && touchDuration < 300) {
+      e.preventDefault();
+      toggleFlip(id);
+    }
+    
+    touchStartRef.current = null;
+    touchMovedRef.current = false;
+  };
 
   // Reset all cards to default state
   function resetAllCards() {
@@ -162,8 +201,10 @@ const Leadership = () => {
                   className="relative w-full h-full"
                   onMouseEnter={() => setFlippedCard(item.id)}
                   onMouseLeave={() => setFlippedCard(null)}
-                  onClick={(e) => { e.stopPropagation(); if (touchFlipRef.current) { touchFlipRef.current = false; return; } toggleFlip(item.id); }}
-                  onTouchStart={(e) => { touchFlipRef.current = true; toggleFlip(item.id); }}
+                  onClick={(e) => { e.stopPropagation(); toggleFlip(item.id); }}
+                  onTouchStart={(e) => handleTouchStart(e, item.id)}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={(e) => handleTouchEnd(e, item.id)}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleFlip(item.id); }}
@@ -215,7 +256,16 @@ const Leadership = () => {
                   <div className={`absolute inset-0 transition-transform duration-700 backface-hidden ${
                     flippedCard === item.id ? '' : 'rotate-y-180'
                   }`} style={{ transformStyle: 'preserve-3d' }}>
-                    <div id={`card-back-${item.id}`} className="w-full h-full bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 flex flex-col justify-between overflow-y-auto border border-[#D4AF37]/30">
+                    <div 
+                      id={`card-back-${item.id}`} 
+                      className="w-full h-full bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 flex flex-col justify-between overflow-y-auto border border-[#D4AF37]/30"
+                      style={{ 
+                        touchAction: 'pan-y',
+                        WebkitOverflowScrolling: 'touch'
+                      }}
+                      onTouchStart={(e) => e.stopPropagation()}
+                      onTouchMove={(e) => e.stopPropagation()}
+                    >
                       {item.isSpecial ? (
                         <div className="space-y-4">
                           {/* Header */}
