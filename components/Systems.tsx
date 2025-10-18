@@ -11,7 +11,7 @@ const projects = [
     description: "Built a secure platform for academic paper access and AI-powered concept explanations, reducing manual search time by 50%. Developed a document system with 95% accurate metadata extraction across 100+ papers. Integrated Gemini API for real-time concept support, improving understanding by 85%. Designed a responsive, modern UI with 95% user satisfaction and 3x efficiency gains.",
     image: "/vaultify.webp",
     techStack: ["Next.js 14", "Firebase", "Gemini", "TypeScript", "Node.js", "Express.js"],
-    liveUrl: "https://vaultify.vercel.app",
+    liveUrl: "https://vaultify-dev.vercel.app/",
     githubUrl: "https://github.com/Kthombare-dev/Vaultify",
     featured: true,
     status: "Live"
