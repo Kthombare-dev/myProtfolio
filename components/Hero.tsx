@@ -10,7 +10,7 @@ import TechRing from "./ui/TechRing";
 
 const Hero = () => {
   return (
-    <div className="pb-12 sm:pb-16 md:pb-20 lg:pb-24 pt-20 sm:pt-24 md:pt-28 lg:pt-32 relative">
+    <div className="pb-8 sm:pb-12 md:pb-16 lg:pb-20 pt-12 sm:pt-16 md:pt-20 lg:pt-24 relative" style={{ minHeight: 'max(50vh, 400px)' }}>
       {/* Spotlights */}
       <div className="pointer-events-none fixed inset-0 -z-10">
         <Spotlight
@@ -39,7 +39,7 @@ const Hero = () => {
       </div>
 
        {/* Main hero content */}
-       <div className="relative z-10 flex flex-col md:flex-col lg:flex-row items-center md:items-start justify-between gap-8 md:gap-8 xl:gap-20 max-w-7xl mx-auto mt-0 sm:mt-1 md:mt-2 px-4 sm:px-6 md:px-10 min-h-[60vh] sm:min-h-[65vh] md:min-h-[60vh] lg:min-h-[70vh]">
+       <div className="relative z-10 flex flex-col md:flex-col lg:flex-row items-center md:items-start justify-between gap-6 md:gap-8 xl:gap-20 max-w-7xl mx-auto mt-0 px-4 sm:px-6 md:px-10 min-h-[50vh] sm:min-h-[55vh] md:min-h-[45vh] lg:min-h-[60vh]">
         
         {/* Left Section - Text */}
         <div className="flex flex-col items-start text-left w-full md:max-w-none lg:max-w-2xl">
@@ -106,11 +106,11 @@ const Hero = () => {
             Currently working on <span className="text-[#FFD700]">Vaultify</span> — an AI-powered academic platform.
           </div>
           {/* spacer under status text */}
-          <div className="mt-20" />
+          <div className="mt-8 sm:mt-12 md:mt-16 lg:mt-20" />
         </div>
 
         {/* Right Section - Avatar */}
-        <div className="flex items-center justify-center md:justify-center lg:justify-end w-full md:w-auto md:ml-0 lg:ml-16 shrink-0 -mt-4 md:-mt-4 md:mb-4 md:self-center">
+        <div className="flex items-center justify-center md:justify-center lg:justify-end w-full md:w-auto md:ml-0 lg:ml-16 shrink-0 -mt-2 md:-mt-2 md:mb-2 md:self-center">
           <motion.div
             initial={{ scale: 0.96, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
