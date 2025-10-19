@@ -62,11 +62,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/Icon.webp', sizes: 'any' },
-      { url: '/Icon.webp', sizes: '32x32', type: 'image/webp' },
+      { url: '/avatar.jpeg', sizes: 'any' },
+      { url: '/avatar.jpeg', sizes: '32x32', type: 'image/jpeg' },
     ],
     apple: [
-      { url: '/Icon.webp', sizes: '180x180', type: 'image/webp' },
+      { url: '/avatar.jpeg', sizes: '180x180', type: 'image/jpeg' },
     ],
   },
   manifest: '/manifest.json',
