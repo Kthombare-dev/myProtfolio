@@ -95,7 +95,7 @@ const Hero = () => {
             </a>
 
             <a
-              href="https://drive.google.com/uc?export=download&id=1ntYY-tf-rGiVDRgE_kgpK5ZEv0CcPQfq"
+              href="https://drive.google.com/file/d/1dNpFoKXP-HVITz61pGqcBSzOWHWDWfjY/view?usp=sharing"
               className="inline-flex h-12 items-center mt-2 md:mt-10 lg:mt-10 rounded-lg bg-gradient-to-r from-[#D4AF37] to-[#B8941F] text-black px-6 text-sm font-semibold hover:from-[#B8941F] hover:to-[#D4AF37] whitespace-nowrap"
             >
               Get My Resume
