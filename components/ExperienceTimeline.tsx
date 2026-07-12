@@ -172,7 +172,7 @@ type TimelineItem = {
 const items: TimelineItem[] = [
   {
     company: "Developer Bazaar Technologies",
-    title: "Jr. Node.js Developer",
+    title: "Backend Developer",
     start: "Nov 2025",
     end: "Present",
     location: "Indore, India",
